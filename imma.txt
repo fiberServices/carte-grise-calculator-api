@@ -1,0 +1,8 @@
+ESANSE  (ES)
+GAZOLE  (GO)
+ESS+ELEC HNR (EE,EH)
+ELECTRIC (EL)
+// need to be checked
+GAZ+ELEC HNR (GL,GH)
+HYDROGEN (H2)
+GAZOGEN (GA)
