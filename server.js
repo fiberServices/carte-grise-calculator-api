@@ -14,14 +14,32 @@ app.use(cors());
 app.get("/getDataImmatriculation", async function (req, res) {
   // get parameters from the request
   var plaque = req.query.plaque;
+  var region = req.query.region;
+  // if req.query.region or req.query.plaque is empty return error message
+
+  if (region === undefined || plaque === undefined) {
+    res.send(
+      {
+        error: "region or plaque is undefined",
+      },
+      400
+    );
+    return;
+  }
+
   var data = await APIs[0].reachData(plaque);
 
   // if error in data is not empty return error message
   console.log("error : " + data.erreur);
-  if (data.erreur !== "") {
-    res.send({
-      error: data.erreur,
-    } , 400);
+  const error = data.erreur;
+  if (error !== "") {
+    console.log("error after : " + error);
+    res.send(
+      {
+        error: data.erreur,
+      },
+      400
+    );
     return;
   }
 
@@ -32,18 +50,22 @@ app.get("/getDataImmatriculation", async function (req, res) {
     puissance: data.puisFisc,
     dateMiseEnCirculation: data.date1erCir_us,
     marque: data.marque,
+    energy: data.energieNGC,
   };
+
+  console.log("region : " + region);
 
   // send the response
   const taxValue = taxCalculator({
     p: data.puisFisc,
-    region: "région Ile-de-France",
+    region: region,
     startDate: new Date(data.date1erCir_us),
     // vehicleType: VEHICLETYPE,
     powerType: APIs[0].typeConverter[data.energieNGC],
   });
 
   res.send({
+    region: region,
     price: {
       total: taxValue.total,
       y1: taxValue.y1,
