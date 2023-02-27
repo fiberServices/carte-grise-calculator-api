@@ -11,6 +11,47 @@ var app = experess();
 
 app.use(cors());
 
+
+app.get('/getDataNoPlate', function (req, res) {
+  var region = req.query.region;
+  var date = req.query.date;
+  var puissance = req.query.puissance;
+  var type = req.query.type;
+
+  if (region === undefined || date === undefined || puissance === undefined || type === undefined) {
+    res.send(
+      {
+        error: "region or date or puissance or type is undefined",
+      },
+      400
+    );
+    return;
+  }
+
+  const taxValue = taxCalculator({
+    p: puissance,
+    region: region,
+    startDate: new Date(date),
+    // vehicleType: VEHICLETYPE,
+    powerType: type,
+  });
+
+  res.send({
+    region: region,
+    price: {
+      total: taxValue.total,
+      y1: taxValue.y1,
+      y2: taxValue.y2,
+      y3: taxValue.y3,
+      y4: taxValue.y4,
+      y5: taxValue.y5,
+      y6: taxValue.y6,
+    },
+  });
+  
+})
+
+
 app.get("/getDataImmatriculation", async function (req, res) {
   // get parameters from the request
   var plaque = req.query.plaque;
